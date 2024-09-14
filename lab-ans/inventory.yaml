@@ -1,0 +1,6 @@
+lab-hosts:
+  hosts:
+    vm-host-0:
+      ansible_host: 192.168.42.A
+    vm-host-1:
+      ansible_host: 192.168.42.B

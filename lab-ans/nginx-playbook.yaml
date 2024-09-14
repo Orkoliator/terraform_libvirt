@@ -1,0 +1,46 @@
+---
+
+- hosts: lab-hosts
+  gather_facts: true
+  become: yes
+  tasks:
+
+    - name: changing a hostname
+      hostname:
+        name: "{{ inventory_hostname_short }}"
+
+    - name: install nginx
+      apt:
+        name: nginx
+        state: latest
+        update_cache: yes
+
+    - name: create directory for static content
+      file:
+        path: /var/www/html/hello-world
+        state: directory
+        mode: 0755
+
+    - name: copy static page "index.html" template to server
+      template:
+        src: "index.html.j2"
+        dest: /var/www/html/hello-world/index.html
+        mode: 0644
+
+    - name: copy ready "index.html" file to nginx default location
+      copy:
+        src: /var/www/html/hello-world/index.html
+        dest: /var/www/html/index.html
+        mode: 0644
+        remote_src: true
+
+    - name: enable default nginx website
+      file:
+        src: /etc/nginx/sites-available/default
+        path: /etc/nginx/sites-enabled/default
+        state: link
+
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
